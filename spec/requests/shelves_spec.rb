@@ -52,7 +52,7 @@ RSpec.describe 'Shelves API', type: :request do
   # Test suite for POST /shelves
   describe 'POST /shelves' do
     # valid payload
-    let(:valid_attributes) { { title: 'My shelf', created_by: '1' } }
+    let(:valid_attributes) { { title: 'My shelf', created_by: 'Rspec' } }
 
     context 'when the request is valid' do
       before { post '/shelves', params: valid_attributes }
