@@ -2,14 +2,16 @@ require 'rails_helper'
 
 RSpec.describe 'Books API', type: :request do
   # Initialize the test data
-  let!(:shelf) { create(:shelf) }
+  let(:user) { create(:user) }
+  let!(:shelf) { create(:shelf, created_by: user.id) }
   let!(:books) { create_list(:book, 20, shelf_id: shelf.id) }
   let(:shelf_id) { shelf.id }
   let(:id) { books.first.id }
+  let(:headers) { valid_headers }
 
   # Test suite for GET /shelves/:shelf_id/books
   describe 'GET /shelves/:shelf_id/books' do
-    before { get "/shelves/#{shelf_id}/books" }
+    before { get "/shelves/#{shelf_id}/books" , params: {}, headers: headers }
 
     context 'when shelf exists' do
       it 'returns status code 200' do
@@ -34,11 +36,9 @@ RSpec.describe 'Books API', type: :request do
     end
   end
 
-
-
   # Test suite for GET /shelves/:shelf_id/books/:id
   describe 'GET /shelves/:shelf_id/books/:id' do
-    before { get "/shelves/#{shelf_id}/books/#{id}" }
+    before { get "/shelves/#{shelf_id}/books/#{id}" , params: {}, headers: headers }
 
     context 'when shelf book exists' do
       it 'returns status code 200' do
@@ -72,10 +72,10 @@ RSpec.describe 'Books API', type: :request do
         genre: 'Test',
         publisher: 'Test',
         shelf_id: shelf_id,
-    } }
+    }.to_json }
 
     context 'when request attributes are valid' do
-      before { post "/shelves/#{shelf_id}/books", params: valid_attributes }
+      before { post "/shelves/#{shelf_id}/books", params: valid_attributes, headers: headers }
 
       it 'returns status code 201' do
         expect(response).to have_http_status(201)
@@ -83,7 +83,7 @@ RSpec.describe 'Books API', type: :request do
     end
 
     context 'when an invalid request' do
-      before { post "/shelves/#{shelf_id}/books", params: {} }
+      before { post "/shelves/#{shelf_id}/books", params: {}, headers: headers}
 
       it 'returns status code 422' do
         expect(response).to have_http_status(422)
@@ -97,9 +97,9 @@ RSpec.describe 'Books API', type: :request do
 
   # Test suite for PUT /shelves/:shelf_id/books/:id
   describe 'PUT /shelves/:shelf_id/books/:id' do
-    let(:valid_attributes) { { title: 'TestBook' } }
+    let(:valid_attributes) { { title: 'TestBook' }.to_json }
 
-    before { put "/shelves/#{shelf_id}/books/#{id}", params: valid_attributes }
+    before { put "/shelves/#{shelf_id}/books/#{id}", params: valid_attributes, headers: headers }
 
     context 'when book exists' do
       it 'returns status code 204' do
@@ -127,7 +127,7 @@ RSpec.describe 'Books API', type: :request do
 
   # Test suite for DELETE /shelves/:id
   describe 'DELETE /shelves/:id' do
-    before { delete "/shelves/#{shelf_id}/books/#{id}" }
+    before { delete "/shelves/#{shelf_id}/books/#{id}", params: {}, headers: headers }
 
     it 'returns status code 204' do
       expect(response).to have_http_status(204)

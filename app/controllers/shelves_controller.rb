@@ -2,12 +2,12 @@ class ShelvesController < ApplicationController
   before_action :set_shelf, only: [:show, :update, :destroy]
 
   def index
-    @shelves = Shelf.all
+    @shelves = current_user.shelves
     json_response(@shelves)
   end
 
   def create
-    @shelf = Shelf.create!(shelf_params)
+    @shelf = current_user.shelves.create!(shelf_params)
     json_response(@shelf, :created)
   end
 
@@ -28,7 +28,7 @@ class ShelvesController < ApplicationController
   private
 
   def shelf_params
-    params.permit(:title, :created_by)
+    params.permit(:title)
   end
 
   def set_shelf
